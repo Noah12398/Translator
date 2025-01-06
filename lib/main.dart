@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:get/get.dart';
 import 'Controller.dart';
 
@@ -28,7 +29,6 @@ class MyHomePage extends StatelessWidget {
   final String title;
   final List<String> _items = ['en', 'fr', 'es', 'de', 'ur', 'hi'];
 
-
   @override
   Widget build(BuildContext context) {
     TranslatorController controller = Get.put(TranslatorController());
@@ -40,12 +40,38 @@ class MyHomePage extends StatelessWidget {
       ),
       body: GetBuilder<TranslatorController>(
         builder: (_) {
-          return (Padding(
+          return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                // Drag-and-Drop Area
+                Container(
+      height: 200,
+      width: double.infinity,
+      color: Colors.grey[200],
+      child: DropzoneView(
+        onCreated: (controller) => 
+          Get.find<TranslatorController>().setDropzoneController(controller),
+        onDrop: (event) async {
+          await Get.find<TranslatorController>().audiodrop();
+        },
+      ),
+    ),
+
+    const SizedBox(height: 16),
+
+    // Upload Button
+    ElevatedButton(
+      onPressed: () async {
+        await Get.find<TranslatorController>().audiodrop();
+      },
+      child: const Text('Upload Audio'),
+    ),
+                const SizedBox(height: 16),
+
+                // Input and Translation Widgets
                 Row(children: [
                   Expanded(
                     flex: 3,
@@ -53,15 +79,13 @@ class MyHomePage extends StatelessWidget {
                       controller: controller.inputTextController,
                       focusNode: inputFocusNode,
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Enter text to translate"),
+                        border: OutlineInputBorder(),
+                        labelText: "Enter text to translate",
+                      ),
                       maxLines: 6,
                     ),
                   ),
-                  const SizedBox(
-                    width: 50,
-                    height: 5,
-                  ),
+                  const SizedBox(width: 50),
                   Expanded(
                     flex: 1,
                     child: DropdownButton<String>(
@@ -78,28 +102,19 @@ class MyHomePage extends StatelessWidget {
                           value: value,
                           child: Text(
                             value,
-                            style: TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: Colors.blue),
                           ),
                         );
                       }).toList(),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.green),
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.green),
                       underline: Container(
                         height: 2,
                         color: Colors.red,
                       ),
                     ),
                   ),
-                  Expanded(
-                      child: ElevatedButton(
-                    onPressed: () {
-                      controller.transcribeAudio("https://assembly.ai/wildfires.mp3"); // Start audio transcription
-                    },
-                    child: Text('Start Transcription'),
-                  ))
                 ]),
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     inputFocusNode.requestFocus();
@@ -119,30 +134,25 @@ class MyHomePage extends StatelessWidget {
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
+                const SizedBox(height: 16),
                 Row(children: [
                   Expanded(
                     flex: 3,
                     child: TextField(
                       controller: controller.translatedTextController,
                       focusNode: inputFocusNode,
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          labelText: controller.translatedTextController.text),
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Translated Text"),
                       maxLines: 6,
                     ),
                   ),
-                  const SizedBox(
-                    width: 50,
-                    height: 5,
-                  ),
+                  const SizedBox(width: 50),
                   Expanded(
                     flex: 1,
                     child: DropdownButton<String>(
                       value: controller.selectedItem,
-                      hint: const Text('Language to translated to'),
+                      hint: const Text('Language to translate to'),
                       onChanged: (String? newValue) {
                         if (newValue != null) {
                           controller.changelanguage(newValue);
@@ -154,21 +164,21 @@ class MyHomePage extends StatelessWidget {
                           value: value,
                           child: Text(
                             value,
-                            style: TextStyle(color: Colors.blue),
+                            style: const TextStyle(color: Colors.blue),
                           ),
                         );
                       }).toList(),
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.green),
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.green),
                       underline: Container(
                         height: 2,
                         color: Colors.red,
                       ),
                     ),
                   ),
-                ])
+                ]),
               ],
             ),
-          ));
+          );
         },
       ),
     );

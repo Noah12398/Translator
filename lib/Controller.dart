@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:get/get.dart';
 import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
@@ -65,7 +67,7 @@ class TranslatorController extends GetxController {
           url,
           headers: {
             'Authorization':
-                'Bearer ', // Use the same API key
+                '', // Use the same API key
           },
         );
 
@@ -78,10 +80,9 @@ class TranslatorController extends GetxController {
             return null;
           } else if (data['status'] == 'processing') {
             print("Transcription is still processing...");
-          }else if(data['status'] == 'queued'){
+          } else if (data['status'] == 'queued') {
             print('Transcription ${data['status']}');
-          } 
-          else {
+          } else {
             print('Error: ${data['status']}');
           }
         } else {
@@ -132,5 +133,84 @@ class TranslatorController extends GetxController {
   changelanguage2(String newValue) {
     selectedItem2 = newValue;
     update();
+  }
+
+  String dropStatus = 'Drag & Drop an Audio File Here';
+  late DropzoneViewController dropzoneController;
+
+  // Initialize Dropzone
+  void initializeDropzone(DropzoneViewController controller) {
+    dropzoneController = controller;
+  }
+
+  void setDropzoneController(DropzoneViewController controller) {
+    dropzoneController = controller;
+  }
+
+  Future<void> audiodrop() async {
+    try {
+      final file = await dropzoneController.pickFiles();
+
+      if (file.isEmpty) {
+        print('No file selected.');
+        update();
+        return;
+      }
+
+      print('File selected. Uploading...');
+      update();
+
+      // Extract file details
+      final fileName = file[0].name;
+      final fileBytes = await dropzoneController.getFileData(file[0]);
+
+      final response = await _uploadFile(fileName, fileBytes);
+
+      if (response) {
+        print('File uploaded successfully!');
+      } else {
+        print('Failed to upload file.');
+      }
+      update();
+    } catch (e) {
+      print('Error during file selection: $e');
+      update();
+    }
+  }
+
+  /// Method to handle file upload
+  Future<bool> _uploadFile(String fileName, Uint8List fileBytes) async {
+    try {
+      final url = Uri.parse("https://api.assemblyai.com/v2/upload");
+      final request = http.MultipartRequest("POST", url)
+        ..headers.addAll({
+          'Content-Type': 'application/json',
+          'Authorization': ''
+        })
+        ..files.add(
+          http.MultipartFile.fromBytes(
+            'file',
+            fileBytes,
+            filename: fileName,
+          ),
+        );
+
+      final streamedResponse = await request.send();
+      if (streamedResponse.statusCode == 200) {
+        final response = await http.Response.fromStream(streamedResponse);
+        final data = json.decode(response.body);
+        final String audioUrl = data["upload_url"];
+        transcribeAudio(audioUrl);
+        print('File uploaded successfully.');
+        return true;
+      } else {
+        print(
+            'Failed to upload file. Status code: ${streamedResponse.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error during file upload: $e');
+      return false;
+    }
   }
 }
