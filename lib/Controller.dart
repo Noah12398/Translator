@@ -3,24 +3,27 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:get/get.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
-
+import 'RealTimeTranslation.dart';
 class TranslatorController extends GetxController {
   String inputText = '';
   String translatedText = '';
+    String translatedText5 = '';
+
   String selectedItem = 'en'; // Target language
   String selectedItem2 = 'en'; // Source language
+  String selectedItem5 = 'en'; // Source language
 
   TextEditingController inputTextController = TextEditingController();
   TextEditingController translatedTextController = TextEditingController();
-
+TextEditingController translatedTextController5=TextEditingController();
   final GoogleTranslator translator = GoogleTranslator();
 
-  // Base URL for AssemblyAI
   final String baseUrl = "https://api.assemblyai.com/v2";
 
-  // Method to handle audio transcription
   Future<String?> transcribeAudio(String audioUrl) async {
     final url = Uri.parse('$baseUrl/transcript');
     try {
@@ -29,7 +32,7 @@ class TranslatorController extends GetxController {
         headers: {
           'Content-Type': 'application/json',
           'Authorization':
-              'Bearer ' // Replace with your actual API key
+              'Bearer '
         },
         body: json.encode({'audio_url': audioUrl}),
       );
@@ -37,7 +40,7 @@ class TranslatorController extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final transcriptionId =
-            data['id']; // Assuming the transcription ID is returned in 'id'
+            data['id'];
 
         if (data['status'] == 'queued') {
           return await _pollTranscriptionStatus(transcriptionId);
@@ -49,25 +52,24 @@ class TranslatorController extends GetxController {
         }
       } else {
         print('Error: ${response.body}');
-        return null; // Handle API errors here
+        return null;
       }
     } catch (e) {
       print('Exception: $e');
-      return null; // Catch any other exceptions
+      return null;
     }
   }
 
   Future<String?> _pollTranscriptionStatus(String transcriptionId) async {
     final url = Uri.parse('$baseUrl/transcript/$transcriptionId');
 
-    // Keep checking until the status is 'completed'
     while (true) {
       try {
         final response = await http.get(
           url,
           headers: {
             'Authorization':
-                '', // Use the same API key
+                '',
           },
         );
 
@@ -94,12 +96,10 @@ class TranslatorController extends GetxController {
         return null; // Catch any other exceptions
       }
 
-      // Wait for a short period before polling again (e.g., 5 seconds)
       await Future.delayed(Duration(seconds: 5));
     }
   }
 
-  // Method to translate the transcribed text
   Future<void> translateText() async {
     if (inputTextController.text.isEmpty) {
       print("Input text is empty");
@@ -124,12 +124,14 @@ class TranslatorController extends GetxController {
     }
   }
 
-  // Language change methods
   changelanguage(String newValue) {
     selectedItem = newValue;
     update();
   }
-
+  changelanguage5(String newValue) {
+    selectedItem5 = newValue;
+    update();
+  }
   changelanguage2(String newValue) {
     selectedItem2 = newValue;
     update();
@@ -138,7 +140,6 @@ class TranslatorController extends GetxController {
   String dropStatus = 'Drag & Drop an Audio File Here';
   late DropzoneViewController dropzoneController;
 
-  // Initialize Dropzone
   void initializeDropzone(DropzoneViewController controller) {
     dropzoneController = controller;
   }
@@ -148,13 +149,10 @@ class TranslatorController extends GetxController {
   }
 Future<void> audiodropFile(dynamic file) async {
     try {
-      // Retrieve the file name
       final fileName = await dropzoneController.getFilename(file);
 
-      // Optionally, retrieve the file bytes or process it as needed
       final fileBytes = await dropzoneController.getFileData(file);
 
-      // Handle the file (e.g., upload or process it)
       print('File dropped: $fileName');
       _uploadFile( fileName, fileBytes);
     } catch (e) {
@@ -174,7 +172,6 @@ Future<void> audiodropFile(dynamic file) async {
       print('File selected. Uploading...');
       update();
 
-      // Extract file details
       final fileName = file[0].name;
       final fileBytes = await dropzoneController.getFileData(file[0]);
 
@@ -226,4 +223,51 @@ Future<void> audiodropFile(dynamic file) async {
       return false;
     }
   }
+final SpeechToText _speechToText = SpeechToText();
+  bool speechEnabled = false;
+  String lastWords = '';
+
+  @override
+  void onInit() {
+    super.onInit();
+    initSpeech();
+  }
+
+  void initSpeech() async {
+    speechEnabled = await _speechToText.initialize();
+    update();
+  }
+
+   void startListening() async {
+    if (speechEnabled) {
+      await _speechToText.listen(onResult: onSpeechResult);
+      print("Listening started");
+      update(); // Reflect changes in the UI
+    } else {
+      print("Speech-to-Text is not enabled.");
+    }
+  }
+
+  // Stop listening for speech
+  void stopListening() async {
+    if (speechEnabled && _speechToText.isListening) {
+      await _speechToText.stop();
+      print("Listening stopped");
+      update(); // Reflect changes in the UI
+    } else {
+      print("Speech-to-Text is not listening.");
+    }
+  }
+
+  // Callback for speech recognition results
+  void onSpeechResult (SpeechRecognitionResult result)async {
+    lastWords = result.recognizedWords;
+    print("Recognized words: ${lastWords}");
+    final translation5 = await translator.translate(lastWords,
+          from: 'en', to: selectedItem5);
+      translatedText5 = translation5.text;
+      translatedTextController5.text = translatedText5;
+    update(); // Update the UI with recognized words
+  }
+  
 }

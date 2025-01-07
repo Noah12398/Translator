@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dropzone/flutter_dropzone.dart';
 import 'package:get/get.dart';
@@ -52,13 +53,13 @@ class MyHomePage extends StatelessWidget {
               children: [
                 Expanded(
                   flex: 2,
-                  child:  SingleChildScrollView(
+                  child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Language Dropdown for Translation
                         const SizedBox(height: 16),
-                    
+
                         // TextField for Translated Text
                         TextField(
                           controller: controller.translatedTextController,
@@ -67,10 +68,11 @@ class MyHomePage extends StatelessWidget {
                             border: OutlineInputBorder(),
                             labelText: "Translated Text",
                             labelStyle: TextStyle(
-                                color: Colors.white), // Set label color to white
-                            hintStyle: TextStyle(
                                 color:
-                                    Colors.white), // Set hint text color to white
+                                    Colors.white), // Set label color to white
+                            hintStyle: TextStyle(
+                                color: Colors
+                                    .white), // Set hint text color to white
                           ),
                           style: const TextStyle(
                               color: Colors.white), // Set text color to white
@@ -85,19 +87,50 @@ class MyHomePage extends StatelessWidget {
                   flex: 1,
                   child: Column(
                     children: [
-                                      const SizedBox(height: 25),
-                      Container(
-                        height: 75,
-                        width: 125,
-                        color: const Color.fromARGB(255, 164, 160, 160),
-                        child: DropzoneView(
-                          onCreated: (controller) =>
-                              Get.find<TranslatorController>()
-                                  .setDropzoneController(controller),
-                          onDropFile: (file) async {
-                            await Get.find<TranslatorController>()
-                                .audiodropFile(file);
-                          },
+                      const SizedBox(height: 25),
+                      DottedBorder(
+                        color: Colors.grey,
+                        child: Container(
+                          height: 100,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(10), // Adjust as needed
+                          ),
+                          padding: const EdgeInsets.all(
+                              3), // Padding to create the border effect
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 73, 72, 72),
+                            ),
+                            child: Stack(
+                              children: [
+                                // The DropzoneView
+                                DropzoneView(
+                                  onCreated: (controller) =>
+                                      Get.find<TranslatorController>()
+                                          .setDropzoneController(controller),
+                                  onDropFile: (file) async {
+                                    await Get.find<TranslatorController>()
+                                        .audiodropFile(file);
+                                  },
+                                ),
+                                // Text placed on top of DropzoneView
+                                Center(
+                                  child: Text(
+                                    'Drag and Drop Here',
+                                    style: TextStyle(
+                                      fontSize: 16, // Customize the font size
+                                      color: Colors
+                                          .white, // Customize the text color
+                                      fontWeight: FontWeight
+                                          .bold, // Customize the text style
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 50),

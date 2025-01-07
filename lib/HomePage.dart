@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:translator_app/Controller.dart';
 import 'AudioUpload.dart';
 import 'Translate_Text.dart';
-
+import 'RealTimeTranslation.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required String title}); // Constructor with required title
   
@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
       AudioUpload(
         title: 'Translator App',
       ),
-      // VoiceTranslation() // Uncomment if VoiceTranslation widget is available
+       Realtimetranslation()// Uncomment if VoiceTranslation widget is available
     ];
 
     return Scaffold(

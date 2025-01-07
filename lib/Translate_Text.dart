@@ -42,17 +42,20 @@ class Translatetextno extends StatelessWidget {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.grey.shade400),
+                                  border:
+                                      Border.all(color: Colors.grey.shade400),
                                 ),
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 child: DropdownButton<String>(
+                                  dropdownColor:
+                                      const Color.fromARGB(255, 45, 45, 45),
                                   value: controller.selectedItem2,
                                   hint: const Text(
                                     'Language to be translated',
                                     style: TextStyle(
-                                        color: Colors
-                                            .white), // Set text color to white
+                                        color: Color.fromARGB(255, 255, 255,
+                                            255)), // Set text color to white
                                   ),
                                   onChanged: (String? newValue) {
                                     if (newValue != null) {
@@ -76,7 +79,7 @@ class Translatetextno extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                
+
                               // TextField for Input Text
                               TextField(
                                 controller: controller.inputTextController,
@@ -92,8 +95,8 @@ class Translatetextno extends StatelessWidget {
                                           .white), // Set hint text color to white
                                 ),
                                 style: const TextStyle(
-                                    color:
-                                        Colors.white), // Set text color to white
+                                    color: Colors
+                                        .white), // Set text color to white
                                 maxLines: 15,
                               ),
                               const SizedBox(height: 16),
@@ -101,7 +104,7 @@ class Translatetextno extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 16),
-                
+
                         // Right Side - Translated Text Section
                         Expanded(
                           flex: 2,
@@ -112,12 +115,15 @@ class Translatetextno extends StatelessWidget {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(color: Colors.grey.shade400),
+                                  border:
+                                      Border.all(color: Colors.grey.shade400),
                                 ),
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 12),
                                 child: DropdownButton<String>(
                                   value: controller.selectedItem,
+                                  dropdownColor:
+                                      const Color.fromARGB(255, 45, 45, 45),
                                   hint: const Text(
                                     'Language to translate to',
                                     style: TextStyle(
@@ -146,7 +152,7 @@ class Translatetextno extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 16),
-                
+
                               // TextField for Translated Text
                               TextField(
                                 controller: controller.translatedTextController,
@@ -162,8 +168,8 @@ class Translatetextno extends StatelessWidget {
                                           .white), // Set hint text color to white
                                 ),
                                 style: const TextStyle(
-                                    color:
-                                        Colors.white), // Set text color to white
+                                    color: Colors
+                                        .white), // Set text color to white
                                 maxLines: 15,
                               ),
                             ],
@@ -172,28 +178,30 @@ class Translatetextno extends StatelessWidget {
                       ],
                     ),
                     ElevatedButton(
-                  onPressed: () {
-                    inputFocusNode.requestFocus();
-                    controller.translateText();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 45, 252, 128),
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16), // Adjust padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 5,
-                    minimumSize: const Size(200, 60), // Set minimum size for the button
-                  ),
-                  child: const Text(
-                    'Translate',
-                    style: TextStyle(
-                      fontSize: 20, // Increase font size
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-                
+                      onPressed: () {
+                        inputFocusNode.requestFocus();
+                        controller.translateText();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(255, 45, 252, 128),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40, vertical: 16), // Adjust padding
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                        minimumSize: const Size(
+                            200, 60), // Set minimum size for the button
+                      ),
+                      child: const Text(
+                        'Translate',
+                        style: TextStyle(
+                          fontSize: 20, // Increase font size
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ));
