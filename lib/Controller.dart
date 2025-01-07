@@ -146,7 +146,21 @@ class TranslatorController extends GetxController {
   void setDropzoneController(DropzoneViewController controller) {
     dropzoneController = controller;
   }
+Future<void> audiodropFile(dynamic file) async {
+    try {
+      // Retrieve the file name
+      final fileName = await dropzoneController.getFilename(file);
 
+      // Optionally, retrieve the file bytes or process it as needed
+      final fileBytes = await dropzoneController.getFileData(file);
+
+      // Handle the file (e.g., upload or process it)
+      print('File dropped: $fileName');
+      _uploadFile( fileName, fileBytes);
+    } catch (e) {
+      print('Error handling dropped file: $e');
+    }
+  }
   Future<void> audiodrop() async {
     try {
       final file = await dropzoneController.pickFiles();
@@ -178,7 +192,6 @@ class TranslatorController extends GetxController {
     }
   }
 
-  /// Method to handle file upload
   Future<bool> _uploadFile(String fileName, Uint8List fileBytes) async {
     try {
       final url = Uri.parse("https://api.assemblyai.com/v2/upload");
