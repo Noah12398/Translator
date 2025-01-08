@@ -155,6 +155,7 @@ class Translatetextno extends StatelessWidget {
 
                               // TextField for Translated Text
                               TextField(
+                                readOnly: true,
                                 controller: controller.translatedTextController,
                                 focusNode: inputFocusNode,
                                 decoration: const InputDecoration(

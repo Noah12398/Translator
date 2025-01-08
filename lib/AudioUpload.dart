@@ -32,7 +32,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TranslatorController controller = Get.put(TranslatorController());
+    TranslatorController controller9 = Get.put(TranslatorController());
 
     return Scaffold(
       backgroundColor: Colors.black, // Set background color to black
@@ -57,25 +57,53 @@ class MyHomePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Language Dropdown for Translation
+                        DropdownButton<String>(
+                          value: controller9.selectedItem9,
+                          dropdownColor: const Color.fromARGB(255, 45, 45,
+                              45),
+
+                          hint: const Text(
+                            'Language to translate to',
+                            style: TextStyle(
+                                color: Colors.white),
+                          ),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              controller9.changelanguage9(newValue);
+                            }
+                          },
+                          isExpanded: true,
+                          items: _items
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: const TextStyle(color: Colors.blue)),
+                            );
+                          }).toList(),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.green),
+                          underline:
+                              Container(height: 2, color: Colors.transparent),
+                        ),
                         const SizedBox(height: 16),
 
-                        // TextField for Translated Text
                         TextField(
-                          controller: controller.translatedTextController,
+                          readOnly: true,
+                          controller: controller9.translatedTextController,
                           focusNode: inputFocusNode,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: "Translated Text",
                             labelStyle: TextStyle(
                                 color:
-                                    Colors.white), // Set label color to white
+                                    Colors.white),
                             hintStyle: TextStyle(
                                 color: Colors
-                                    .white), // Set hint text color to white
+                                    .white),
                           ),
                           style: const TextStyle(
-                              color: Colors.white), // Set text color to white
+                              color: Colors.white),
                           maxLines: 15,
                         ),
                       ],

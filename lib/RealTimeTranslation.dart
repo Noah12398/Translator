@@ -7,10 +7,9 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:translator_app/Controller.dart';
 
 class Realtimetranslation extends StatelessWidget {
-   Realtimetranslation(
-      {super.key}); // 
+  Realtimetranslation({super.key}); //
   final TranslatorController controller5 = Get.put(TranslatorController());
-int i=1;
+  int i = 1;
   Realtimetranslation.initSpeech({super.key});
   final List<String> _items = ['en', 'fr', 'es', 'de', 'ur', 'hi'];
 
@@ -41,37 +40,37 @@ int i=1;
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         DropdownButton<String>(
-                                  value: controller5.selectedItem5,
-                                  dropdownColor: const Color.fromARGB(255, 45, 45, 45), // Set the dropdown menu background color to black
+                          value: controller5.selectedItem5,
+                          dropdownColor: const Color.fromARGB(255, 45, 45,
+                              45), // Set the dropdown menu background color to black
 
-                                  hint: const Text(
-                                    'Language to translate to',
-                                    style: TextStyle(
-                                        color: Colors
-                                            .white), // Set text color to white
-                                  ),
-                                  onChanged: (String? newValue) {
-                                    if (newValue != null) {
-                                      controller5.changelanguage5(newValue);
-                                    }
-                                  },
-                                  isExpanded: true,
-                                  items: _items.map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value,
-                                          style: const TextStyle(
-                                              color: Colors.blue)),
-                                    );
-                                  }).toList(),
-                                  icon: const Icon(Icons.arrow_drop_down,
-                                      color: Colors.green),
-                                  underline: Container(
-                                      height: 2, color: Colors.transparent),
-                                ),
+                          hint: const Text(
+                            'Language to translate to',
+                            style: TextStyle(
+                                color: Colors.white), // Set text color to white
+                          ),
+                          onChanged: (String? newValue) {
+                            if (newValue != null) {
+                              controller5.changelanguage5(newValue);
+                            }
+                          },
+                          isExpanded: true,
+                          items: _items
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value,
+                                  style: const TextStyle(color: Colors.blue)),
+                            );
+                          }).toList(),
+                          icon: const Icon(Icons.arrow_drop_down,
+                              color: Colors.green),
+                          underline:
+                              Container(height: 2, color: Colors.transparent),
+                        ),
                         const SizedBox(height: 16),
                         TextField(
+                          readOnly: true,
                           controller: controller5.translatedTextController5,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
@@ -94,16 +93,19 @@ int i=1;
                       const SizedBox(height: 50),
                       ElevatedButton(
                         onPressed: () async {
-                          if(i==1){
-                          controller5.startListening(); // Start real-time speech recognition
-                          i=0;}else{
+                          if (i == 1) {
+                            controller5
+                                .startListening(); // Start real-time speech recognition
+                            i = 0;
+                          } else {
                             controller5.stopListening();
-                            i=1;
+                            i = 1;
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:i==1?
-                              const Color.fromARGB(255, 45, 252, 128): Colors.red,
+                          backgroundColor: i == 1
+                              ? const Color.fromARGB(255, 45, 252, 128)
+                              : Colors.red,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 24, vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -111,11 +113,11 @@ int i=1;
                           ),
                           elevation: 5,
                         ),
-                        child:  Text(
+                        child: Text(
                           i == 1 ? 'Start Speaking' : 'Stop Speaking',
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
-                      ),                      
+                      ),
                     ],
                   ),
                 ),

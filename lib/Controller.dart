@@ -8,18 +8,20 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'RealTimeTranslation.dart';
+
 class TranslatorController extends GetxController {
   String inputText = '';
   String translatedText = '';
-    String translatedText5 = '';
+  String translatedText5 = '';
 
   String selectedItem = 'en'; // Target language
   String selectedItem2 = 'en'; // Source language
   String selectedItem5 = 'en'; // Source language
+  String selectedItem9 = 'en'; // Source language
 
   TextEditingController inputTextController = TextEditingController();
   TextEditingController translatedTextController = TextEditingController();
-TextEditingController translatedTextController5=TextEditingController();
+  TextEditingController translatedTextController5 = TextEditingController();
   final GoogleTranslator translator = GoogleTranslator();
 
   final String baseUrl = "https://api.assemblyai.com/v2";
@@ -31,16 +33,14 @@ TextEditingController translatedTextController5=TextEditingController();
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization':
-              'Bearer '
+          'Authorization': 'Bearer '
         },
         body: json.encode({'audio_url': audioUrl}),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final transcriptionId =
-            data['id'];
+        final transcriptionId = data['id'];
 
         if (data['status'] == 'queued') {
           return await _pollTranscriptionStatus(transcriptionId);
@@ -68,8 +68,7 @@ TextEditingController translatedTextController5=TextEditingController();
         final response = await http.get(
           url,
           headers: {
-            'Authorization':
-                '',
+            'Authorization': '',
           },
         );
 
@@ -77,7 +76,10 @@ TextEditingController translatedTextController5=TextEditingController();
           final data = json.decode(response.body);
           if (data['status'] == 'completed') {
             print("Transcription completed!");
-            translatedTextController.text = data['text'];
+            final translation = await translator.translate(data['text'],
+                from: 'en', to: selectedItem9);
+            translatedText = translation.text;
+            translatedTextController.text = translatedText;
             update();
             return null;
           } else if (data['status'] == 'processing') {
@@ -128,8 +130,13 @@ TextEditingController translatedTextController5=TextEditingController();
     selectedItem = newValue;
     update();
   }
+
   changelanguage5(String newValue) {
     selectedItem5 = newValue;
+    update();
+  }
+changelanguage9(String newValue) {
+    selectedItem9 = newValue;
     update();
   }
   changelanguage2(String newValue) {
@@ -147,18 +154,20 @@ TextEditingController translatedTextController5=TextEditingController();
   void setDropzoneController(DropzoneViewController controller) {
     dropzoneController = controller;
   }
-Future<void> audiodropFile(dynamic file) async {
+
+  Future<void> audiodropFile(dynamic file) async {
     try {
       final fileName = await dropzoneController.getFilename(file);
 
       final fileBytes = await dropzoneController.getFileData(file);
 
       print('File dropped: $fileName');
-      _uploadFile( fileName, fileBytes);
+      _uploadFile(fileName, fileBytes);
     } catch (e) {
       print('Error handling dropped file: $e');
     }
   }
+
   Future<void> audiodrop() async {
     try {
       final file = await dropzoneController.pickFiles();
@@ -223,7 +232,8 @@ Future<void> audiodropFile(dynamic file) async {
       return false;
     }
   }
-final SpeechToText _speechToText = SpeechToText();
+
+  final SpeechToText _speechToText = SpeechToText();
   bool speechEnabled = false;
   String lastWords = '';
 
@@ -238,7 +248,7 @@ final SpeechToText _speechToText = SpeechToText();
     update();
   }
 
-   void startListening() async {
+  void startListening() async {
     if (speechEnabled) {
       await _speechToText.listen(onResult: onSpeechResult);
       print("Listening started");
@@ -260,14 +270,13 @@ final SpeechToText _speechToText = SpeechToText();
   }
 
   // Callback for speech recognition results
-  void onSpeechResult (SpeechRecognitionResult result)async {
+  void onSpeechResult(SpeechRecognitionResult result) async {
     lastWords = result.recognizedWords;
     print("Recognized words: ${lastWords}");
-    final translation5 = await translator.translate(lastWords,
-          from: 'en', to: selectedItem5);
-      translatedText5 = translation5.text;
-      translatedTextController5.text = translatedText5;
+    final translation5 =
+        await translator.translate(lastWords, from: 'en', to: selectedItem5);
+    translatedText5 = translation5.text;
+    translatedTextController5.text = translatedText5;
     update(); // Update the UI with recognized words
   }
-  
 }
